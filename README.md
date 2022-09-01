@@ -1,7 +1,7 @@
 # Detekt pre-commit hook example
 
 ## Description
-It pre-commit hook example that uses detekt to reveal [code smells](https://en.wikipedia.org/wiki/Code_smell) and aims to improve your code readability. 
+Pre-commit hook example that uses detekt to reveal [code smells](https://en.wikipedia.org/wiki/Code_smell) and aims to improve your code readability. 
 
 
 ## Installation
