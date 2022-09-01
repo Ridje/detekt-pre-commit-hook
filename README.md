@@ -1,8 +1,10 @@
-Pre commit hook example for detekt.
-Requires installed [detekt CLI](https://detekt.dev/docs/gettingstarted/cli)
+# Detekt pre-commit hook example
 
-Put your custom rules in ${prject}/config/detekt/config.yml directory, if not presence - then uses default rules.
+## Description
+It pre-commit hook example that uses detekt to reveal [code smells](https://en.wikipedia.org/wiki/Code_smell) and aims to improve your code readability. 
 
-Feel free to customize it, it's simple.
 
-Put file pre-commit in your ${project}/.git/hooks directory.
+## Installation
+1. Install [detekt CLI](https://detekt.dev/docs/gettingstarted/cli)
+2. [Optional] Put your custom detekt rules to ${prject}/config/detekt/config.yml directory.
+3. Put file [pre-commit](https://github.com/Ridje/detekt-pre-commit-hook/blob/master/pre-commit) in your ${project}/.git/hooks directory
