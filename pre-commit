@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#set -x
+LOG_PREFIX="[Pre-commit]"
+
+log() {
+	echo "$LOG_PREFIX $1"
+}
+
+OUTPUT="/tmp/detekt-$(date +%s)"
+GIT_DIFF_FILES=$(git diff --diff-filter=d --name-only HEAD --line-prefix=`git rev-parse --show-toplevel`/)
+if [ -z "$GIT_DIFF_FILES" ] 
+	then 
+		exit 0
+fi
+log "Running detekt check..."
+log "Found changes in next files:"
+log "$GIT_DIFF_FILES"
+RULES_FILE=$(find ./config/detekt/ -name "config.yml" | head -n 1)
+DIFF_FORMATTED=$(echo $GIT_DIFF_FILES | tr ' ' '\n' | tr '\n' ',' )
+if [ -z "$RULES_FILE" ]
+        then
+		log "Using default detekt config"
+		EXEC_COMMAND='detekt --includes $DIFF_FORMATTED > $OUTPUT'
+	else
+		log "Using project config file"
+                EXEC_COMMAND='detekt --includes $DIFF_FORMATTED > $OUTPUT -c $RULES_FILE'
+fi
+eval $EXEC_COMMAND
+EXIT_CODE=$?
+if [ $EXIT_CODE -eq 3 ] 
+	then 
+		log "Some config error, using default detekt config"
+		EXEC_COMMAND='detekt --includes $DIFF_FORMATTED > $OUTPUT'
+		eval $EXEC_COMMAND
+		EXIT_CODE=$?
+fi
+if [ $EXIT_CODE -ne 0 ]; then
+  exec < /dev/tty
+  log "***********************************************"
+  log "                 Detekt failed                 "
+  log "***********************************************"
+  cat $OUTPUT
+  while true; do
+  	read -p "$LOG_PREFIX Do you wish to stop and fix issues before commit?(y or n)" yn
+  	if [ "$yn" = "" ]; then
+    		yn='Y'
+  	fi
+  	case $yn in
+      		[Yy] ) 
+			log "commit stopped"
+			rm $OUTPUT
+			exit $EXIT_CODE;;
+     		[Nn] ) break;;
+      		* ) log "Please answer y or n for yes or no.";;
+  	esac
+  done
+fi
+rm $OUTPUT
